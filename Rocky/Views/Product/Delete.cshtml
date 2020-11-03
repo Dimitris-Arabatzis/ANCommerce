@@ -1,0 +1,124 @@
+﻿@model Rocky.Models.Product
+
+<form method="post" asp-action="DeleteConfirmed" asp-route-Id="@Model.Id" id="ProductDeleteForm">
+     <input asp-for="Id" hidden />
+     <div class="border p-3">
+        <div class="form-group row">
+            <h2 class="text-info pl-3">
+                Delete Product
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Name"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Name" class="form-control" disabled />
+                    </div>
+
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Price"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Price" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Description"></label>
+                    </div>
+                    <div class="col-8">
+                        <textarea asp-for="Description" class="form-control summernote" disabled></textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Description"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Description" class="form-control" disabled></input>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Image"></label>
+                    </div>
+                    <div class="col-8">
+                        <input type="file" name="files" id="uploadBox" multiple asp-for="Price" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="CategoryId"></label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="CategoryId" class="form-control" disabled>
+                            <option selected disabled>@Model.Category.Name</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="ApplicationTypeId"></label>
+                    </div>
+                    <div class="col-8">
+                        <select asp-for="ApplicationTypeId" class="form-control" disabled>
+                            <option selected disabled>@Model.ApplicationType.Name</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-8 offset-4 row">
+
+                        <div class="col">
+                            <input type="submit" onclick="return validateInput()" class="btn btn-danger w-100" value="Delete" />
+                        </div>
+                        <div class="col">
+                            <a asp-action="Index" class="btn btn-success w-100">
+                                <i class="fas fa-sign-out-alt"></i> &nbsp; Back
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4 pt-4">
+                @if (Model.Id != 0)
+                {
+                    <img src="@WebConstants.ImagePath@Model.Image" width="100%" style="border-radius:5px;" class="pr-2" />
+                }
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+    <script>
+
+        function validateInput() {
+
+            event.preventDefault();
+            Swal.fire({
+                title: 'Do you want to delete the product?',
+                showDenyButton: true,
+                showCancelButton: false,
+                confirmButtonText: `Delete`,
+                denyButtonText: `Cancel`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    $("#ProductDeleteForm").submit();
+                } else if (result.isDenied) {
+                    return false;
+                }
+            })
+        }
+    </script>
+}
