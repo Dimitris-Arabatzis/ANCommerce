@@ -6,12 +6,12 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Threading.Tasks;
 
-namespace Rocky.Utility
+namespace Rocky_Utility
 {
     public class EmailSender : IEmailSender
     {
         private readonly IConfiguration _configuration;
-        public MailJetSettings _mailJetSettings { get; set; }
+        public MailJetSettings MailJetSettings { get; set; }
 
         public EmailSender(IConfiguration configuration)
         {
@@ -25,8 +25,8 @@ namespace Rocky.Utility
 
         public async Task Execute(string email, string subject, string body)
         {
-            _mailJetSettings = _configuration.GetSection("MailJet").Get<MailJetSettings>();
-            MailjetClient client = new MailjetClient(_mailJetSettings.ApiKey, _mailJetSettings.SecretKey)
+            MailJetSettings = _configuration.GetSection("MailJet").Get<MailJetSettings>();
+            MailjetClient client = new MailjetClient(MailJetSettings.ApiKey, MailJetSettings.SecretKey)
             {
                 Version = ApiVersion.V3_1,
             };
