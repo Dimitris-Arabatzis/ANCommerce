@@ -6,21 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20201017221459_addCategoryToDatabase.cs" />
-    <Compile Remove="Migrations\20201017221459_addCategoryToDatabase.Designer.cs" />
-    <Compile Remove="Migrations\20201017221611_addCategoryToDatabase.cs" />
-    <Compile Remove="Migrations\20201017221611_addCategoryToDatabase.Designer.cs" />
-    <Compile Remove="Migrations\20201019184315_AddApplicationTypeToDatabase.cs" />
-    <Compile Remove="Migrations\20201019184315_AddApplicationTypeToDatabase.Designer.cs" />
-    <Compile Remove="Migrations\20201021180518_AddApplicationTypeToProductModel.cs" />
-    <Compile Remove="Migrations\20201021180518_AddApplicationTypeToProductModel.Designer.cs" />
-    <Compile Remove="Migrations\20201021180949_AddApplicationTypeToProductModel.cs" />
-    <Compile Remove="Migrations\20201021180949_AddApplicationTypeToProductModel.Designer.cs" />
-    <Compile Remove="Migrations\20201023222707_AddFullNameToUsersTable.cs" />
-    <Compile Remove="Migrations\20201023222707_AddFullNameToUsersTable.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Mailjet.Api" Version="1.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.9" />
@@ -38,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Rocky_DataAccess\Rocky_DataAccess.csproj" />
     <ProjectReference Include="..\Rocky_Models\Rocky_Models.csproj" />
     <ProjectReference Include="..\Rocky_Utility\Rocky_Utility.csproj" />
   </ItemGroup>
