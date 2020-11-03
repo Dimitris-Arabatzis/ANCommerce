@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Rocky.Data;
-using Rocky.Models;
+using Rocky_Models;
 using Rocky_Utility;
 
 namespace Rocky.Controllers
