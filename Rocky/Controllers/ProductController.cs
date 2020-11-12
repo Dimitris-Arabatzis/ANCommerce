@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Rocky_DataAccess;
+using Rocky_DataAccess.Repository.IRepository;
 using Rocky_Models;
 using Rocky_Models.ViewModels;
 using Rocky_Utility;
@@ -18,18 +19,18 @@ namespace Rocky.Controllers
     [Authorize(Roles = WebConstants.AdminRole)]
     public class ProductController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IProductRepository _prodRepo;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
+        public ProductController(IProductRepository prodRepo, IWebHostEnvironment webHostEnvironment)
         {
-            _db = db;
+            _prodRepo = prodRepo;
             _webHostEnvironment = webHostEnvironment;
         }
 
         public IActionResult Index()
         {
-            IEnumerable<Product> objList = _db.Product.Include(x=>x.Category).Include(x=>x.ApplicationType);
+            IEnumerable<Product> objList = _prodRepo.GetAll(includeProperies: "Category,ApplicationType");
 
             return View(objList);
         }
@@ -49,16 +50,8 @@ namespace Rocky.Controllers
             ProductVM productVM = new ProductVM()
             {
                 Product = new Product(),
-                CategorySelectList = _db.Category.Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString()
-                }),
-                ApplicationTypeList = _db.ApplicationType.Select ( i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString()
-                })
+                CategorySelectList = _prodRepo.GetAllDropdownList(WebConstants.CategoryName),
+                ApplicationTypeList = _prodRepo.GetAllDropdownList(WebConstants.ApplicationTypeName)
             };
 
             if ( id == null )
@@ -68,7 +61,7 @@ namespace Rocky.Controllers
             }
             else
             {
-                productVM.Product = _db.Product.Find(id);
+                productVM.Product = _prodRepo.Find(id.GetValueOrDefault());
                 if (productVM.Product == null)
                 {
                     return NotFound();
@@ -101,13 +94,13 @@ namespace Rocky.Controllers
                     }
                     productVM.Product.Image = fileName + extension;
 
-                    _db.Product.Add(productVM.Product);
+                    _prodRepo.Add(productVM.Product);
                     
                 }
                 else
                 {
                     //Updating
-                    var objFromDb = _db.Product.AsNoTracking().FirstOrDefault(x => x.Id == productVM.Product.Id);
+                    var objFromDb = _prodRepo.FirstOrDefault(x => x.Id == productVM.Product.Id,isTracking:false);
 
                     if (files.Count > 0)
                     {
@@ -132,23 +125,15 @@ namespace Rocky.Controllers
                     {
                         productVM.Product.Image = objFromDb.Image;
                     }
-                    _db.Product.Update(productVM.Product);
+                    _prodRepo.Update(productVM.Product);
                 }
-                _db.SaveChanges();
+                _prodRepo.Save();
                 return RedirectToAction("Index");
             }
 
-            productVM.CategorySelectList = _db.Category.Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
+            productVM.CategorySelectList = _prodRepo.GetAllDropdownList(WebConstants.CategoryName);
+            productVM.ApplicationTypeList = _prodRepo.GetAllDropdownList(WebConstants.ApplicationTypeName);
 
-            productVM.ApplicationTypeList = _db.ApplicationType.Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
             return View(productVM);
         }
 
@@ -159,7 +144,7 @@ namespace Rocky.Controllers
                 return NotFound();
             }
 
-            Product product = _db.Product.Include(x => x.Category).Include(x=>x.ApplicationType).FirstOrDefault(x => x.Id==id);
+            Product product = _prodRepo.FirstOrDefault(x => x.Id == id,includeProperies: "Category,ApplicationType");
             //product.Category = _db.Category.Find(product.CategoryId);
             if (product == null)
             {
@@ -176,7 +161,7 @@ namespace Rocky.Controllers
             {
                 return NotFound();
             }
-            var obj = _db.Product.Find(id);
+            var obj = _prodRepo.Find(id.GetValueOrDefault());
 
             if(obj == null)
             {
@@ -190,8 +175,8 @@ namespace Rocky.Controllers
             }
             
 
-            _db.Product.Remove(obj);
-            _db.SaveChanges();
+            _prodRepo.Remove(obj);
+            _prodRepo.Save();
             return RedirectToAction("Index");
         }
 
@@ -201,7 +186,7 @@ namespace Rocky.Controllers
             {
                 return NotFound();
             }
-            var obj = _db.Product.Find(id);
+            var obj = _prodRepo.Find(id.GetValueOrDefault());
             if (obj == null)
             {
                 return NotFound();
@@ -219,8 +204,8 @@ namespace Rocky.Controllers
             obj.Image = newImageName;
             obj.Id = default;
 
-            _db.Product.Add(obj);
-            _db.SaveChanges();
+            _prodRepo.Add(obj);
+            _prodRepo.Save();
             return RedirectToAction("Index");
         }
     }
