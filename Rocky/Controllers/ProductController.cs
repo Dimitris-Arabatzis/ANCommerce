@@ -37,15 +37,6 @@ namespace Rocky.Controllers
 
         public IActionResult Upsert(int? id)
         {
-            //IEnumerable <SelectListItem> CategoryDropDown = _db.Category.Select(i => new SelectListItem
-            //{
-            //    Text = i.Name,
-            //    Value = i.Id.ToString()
-            //});
-
-            //ViewBag.CategoryDropDown = CategoryDropDown;
-
-            //Product product = new Product();
 
             ProductVM productVM = new ProductVM()
             {
@@ -128,12 +119,14 @@ namespace Rocky.Controllers
                     _prodRepo.Update(productVM.Product);
                 }
                 _prodRepo.Save();
+                TempData[WebConstants.Success] = "Action Successfull!";
                 return RedirectToAction("Index");
             }
 
             productVM.CategorySelectList = _prodRepo.GetAllDropdownList(WebConstants.CategoryName);
             productVM.ApplicationTypeList = _prodRepo.GetAllDropdownList(WebConstants.ApplicationTypeName);
 
+            TempData[WebConstants.Success] = "Action Successfull!";
             return View(productVM);
         }
 
@@ -177,6 +170,7 @@ namespace Rocky.Controllers
 
             _prodRepo.Remove(obj);
             _prodRepo.Save();
+            TempData[WebConstants.Success] = "Action Successfull!";
             return RedirectToAction("Index");
         }
 
@@ -206,6 +200,8 @@ namespace Rocky.Controllers
 
             _prodRepo.Add(obj);
             _prodRepo.Save();
+            TempData[WebConstants.Success] = "Action Successfull!";
+
             return RedirectToAction("Index");
         }
     }

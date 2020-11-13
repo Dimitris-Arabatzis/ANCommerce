@@ -144,7 +144,7 @@ namespace Rocky.Controllers
                 _inqDRepo.Add(inquiryDetail);
             }
             _inqDRepo.Save();
-
+            TempData[WebConstants.Success] = "Action Successfull!";
             return RedirectToAction(nameof(InquiryConfirmation));
         }
 
@@ -166,6 +166,7 @@ namespace Rocky.Controllers
 
             shoppingCartList.Remove(shoppingCartList.FirstOrDefault(x => x.ProductId == id));
             HttpContext.Session.Set(WebConstants.SessionCart, shoppingCartList);
+            TempData[WebConstants.Success] = "Action Successfull!";
             return RedirectToAction(nameof(Index));
         }
     }

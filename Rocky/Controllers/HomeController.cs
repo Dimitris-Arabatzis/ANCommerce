@@ -85,6 +85,7 @@ namespace Rocky.Controllers
             }
             shoppingCartList.Add(new ShoppingCart { ProductId = id });
             HttpContext.Session.Set(WebConstants.SessionCart,shoppingCartList);
+            TempData[WebConstants.Success] = "Action Successfull!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -104,6 +105,7 @@ namespace Rocky.Controllers
             }
 
             HttpContext.Session.Set(WebConstants.SessionCart, shoppingCartList);
+            TempData[WebConstants.Success] = "Action Successfull!";
             return RedirectToAction(nameof(Index));
         }
 
