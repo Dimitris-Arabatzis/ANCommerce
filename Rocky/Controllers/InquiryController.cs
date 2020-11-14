@@ -11,7 +11,7 @@ using Rocky_Utility;
 
 namespace Rocky.Controllers
 {
-    [Authorize(WebConstants.AdminRole)]
+    [Authorize(Roles=WebConstants.AdminRole)]
     public class InquiryController : Controller
     {
         private readonly IInquiryHeaderRepository _inqHRepo;

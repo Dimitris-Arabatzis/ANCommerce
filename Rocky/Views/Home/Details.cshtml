@@ -1,5 +1,5 @@
 ﻿@model Rocky_Models.ViewModels.DetailsVM;
-
+@using Rocky_Utility
 @{
     ViewData["Title"] = "Details";
 }
@@ -33,7 +33,23 @@
 
                                         <p class="text-secondary">@Html.Raw(@Model.Product.Description)</p>
                                     </div>
-
+                                    @if (User.IsInRole(WebConstants.AdminRole))
+                                    {
+                                        <div class="col-12">
+                                            SqFt:
+                                        </div>
+                                        <div class="col-12">
+                                            @if (Model.ExistsInCart)
+                                            {
+                                                <input asp-for="@Model.Product.TempSqFt" disabled class="form-control" />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="@Model.Product.TempSqFt" class="form-control" />
+                                            }
+                                            <span asp-validation-for="@Model.Product.TempSqFt" class="text-danger"></span>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>

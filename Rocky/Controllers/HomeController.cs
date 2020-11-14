@@ -75,7 +75,7 @@ namespace Rocky.Controllers
         }
 
         [HttpPost, ActionName("Details")]
-        public IActionResult DetailsPost(int id)
+        public IActionResult DetailsPost(int id, DetailsVM detailsVM)
         {
             List<ShoppingCart> shoppingCartList = new List<ShoppingCart>();
             if((HttpContext.Session.Get<IEnumerable<ShoppingCart>>(WebConstants.SessionCart)) != null &&
@@ -83,7 +83,7 @@ namespace Rocky.Controllers
             {
                 shoppingCartList = HttpContext.Session.Get<List<ShoppingCart>>(WebConstants.SessionCart);
             }
-            shoppingCartList.Add(new ShoppingCart { ProductId = id });
+            shoppingCartList.Add(new ShoppingCart { ProductId = id , SqFt=detailsVM.Product.TempSqFt});
             HttpContext.Session.Set(WebConstants.SessionCart,shoppingCartList);
             TempData[WebConstants.Success] = "Action Successfull!";
             return RedirectToAction(nameof(Index));
