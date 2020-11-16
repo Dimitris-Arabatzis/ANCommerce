@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Braintree;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +16,7 @@ using Rocky_DataAccess.Repository.IRepository;
 using Rocky_Models;
 using Rocky_Models.ViewModels;
 using Rocky_Utility;
+using Rocky_Utility.BrainTree;
 
 namespace Rocky.Controllers
 {
@@ -29,6 +31,8 @@ namespace Rocky.Controllers
         private readonly IInquiryDetailRepository _inqDRepo;
         private readonly IOrderHeaderRepository _orderHRepo;
         private readonly IOrderDetailRepository _orderDRepo;
+        private readonly IBrainTreeGate _brain;
+
         //[BindProperty]
         public ProductUserVM ProductUserVM { get; set; }
 
@@ -39,7 +43,8 @@ namespace Rocky.Controllers
             IInquiryHeaderRepository inqHRepo,
             IInquiryDetailRepository inqDRepo,
             IOrderHeaderRepository orderHRepo,
-            IOrderDetailRepository orderDRepo)
+            IOrderDetailRepository orderDRepo, 
+            IBrainTreeGate brain)
         {
             _webHostEnvironment = webHostEnvironment;
             _emailSender = emailSender;
@@ -49,6 +54,7 @@ namespace Rocky.Controllers
             _inqDRepo = inqDRepo;
             _orderHRepo = orderHRepo;
             _orderDRepo = orderDRepo;
+            _brain = brain;
         }
 
         public IActionResult Index()
@@ -102,6 +108,10 @@ namespace Rocky.Controllers
                 {
                     applicationUser = new ApplicationUser();
                 }
+
+                var gateway = _brain.GetGateway();
+                var clientToken = gateway.ClientToken.Generate();
+                ViewBag.ClientToken = clientToken;
             }
             else
             {
@@ -140,7 +150,7 @@ namespace Rocky.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
-        public async Task<IActionResult> SummaryPost(ProductUserVM ProductUserVM)
+        public async Task<IActionResult> SummaryPost(IFormCollection collection,ProductUserVM ProductUserVM)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -182,6 +192,36 @@ namespace Rocky.Controllers
                     _orderDRepo.Add(orderDetail);
                 }
                 _orderDRepo.Save();
+
+                //BrainTree Payment
+                string nonceFromTheClient = collection["payment_method_nonce"];
+
+                var request = new TransactionRequest
+                {
+                    Amount = Convert.ToDecimal(orderHeader.FinalOrderTotal),
+                    PaymentMethodNonce = nonceFromTheClient,
+                    OrderId = orderHeader.Id.ToString(),
+                    Options = new TransactionOptionsRequest
+                    {
+                        SubmitForSettlement = true
+                    }
+                };
+                var gateway = _brain.GetGateway();
+                Result<Transaction> result = gateway.Transaction.Sale(request);
+
+                if(result.Target.ProcessorResponseText == "Approved")
+                {
+                    orderHeader.TransactionId = result.Target.Id;
+                    orderHeader.OrderStatus = WebConstants.StatusApproved;
+                }
+                else
+                {
+                    orderHeader.OrderStatus = WebConstants.StatusCanceled;
+                }
+                _orderHRepo.Save();
+                //BrainTree Payment
+
+
                 TempData[WebConstants.Success] = "Action Successfull!";
 
                 return RedirectToAction(nameof(InquiryConfirmation),new { id = orderHeader.Id });
@@ -282,6 +322,13 @@ namespace Rocky.Controllers
                 shoppingCartList.Add(new ShoppingCart { ProductId = prod.Id, SqFt = prod.TempSqFt });
             }
             HttpContext.Session.Set(WebConstants.SessionCart, shoppingCartList);
+        }
+
+        public IActionResult Clear(int id)
+        {
+            HttpContext.Session.Clear();
+            TempData[WebConstants.Success] = "Action Successfull!";
+            return RedirectToAction("Index","Home");
         }
     }
     
