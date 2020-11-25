@@ -62,7 +62,7 @@ namespace Rocky
             services.AddAuthentication().AddFacebook(Options =>
             {
                 Options.AppId = "372456587308168";
-                Options.AppSecret = "6e6bdb959ee74529ea99f5b342014c09";
+                Options.AppSecret = "de5d22f0e0406438170344fc95529c95";
             });
 
             services.AddControllersWithViews();

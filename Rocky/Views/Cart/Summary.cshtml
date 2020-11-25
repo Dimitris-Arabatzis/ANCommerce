@@ -11,7 +11,7 @@
                         Order Summary
                     </div>
                     <div class="col-6 text-right">
-                        <a class="btn btn-outline-info btn-sm">Back to Cart</a>
+                        <a asp-action="Index" class="btn btn-outline-info btn-sm">Back to Cart</a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -29,7 +29,6 @@
                                     </div>
                                     <div class="col-9">
                                         <input asp-for="@Model.ApplicationUser.FullName" type="text" class="form-control" />
-                                        <span asp-validation-for="@Model.ApplicationUser.FullName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row my-1">
@@ -38,7 +37,6 @@
                                     </div>
                                     <div class="col-9">
                                         <input asp-for="@Model.ApplicationUser.PhoneNumber" type="text" required class="form-control" />
-                                        <span asp-validation-for="@Model.ApplicationUser.PhoneNumber" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="row my-1">
@@ -47,7 +45,6 @@
                                     </div>
                                     <div class="col-9">
                                         <input asp-for="@Model.ApplicationUser.Email" type="text" required class="form-control" />
-                                        <span asp-validation-for="@Model.ApplicationUser.Email" class="text-danger"></span>
                                     </div>
                                 </div>
                                 @if (User.IsInRole(Rocky_Utility.WebConstants.AdminRole))
@@ -58,7 +55,6 @@
                                         </div>
                                         <div class="col-9">
                                             <input asp-for="@Model.ApplicationUser.StreetAddress" type="text" class="form-control" />
-                                            <span asp-validation-for="@Model.ApplicationUser.StreetAddress" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row my-1">
@@ -67,7 +63,6 @@
                                         </div>
                                         <div class="col-9">
                                             <input asp-for="@Model.ApplicationUser.City" type="text" class="form-control" />
-                                            <span asp-validation-for="@Model.ApplicationUser.City" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row my-1">
@@ -76,7 +71,6 @@
                                         </div>
                                         <div class="col-9">
                                             <input asp-for="@Model.ApplicationUser.State" type="text" class="form-control" />
-                                            <span asp-validation-for="@Model.ApplicationUser.State" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="row my-1">
@@ -85,7 +79,6 @@
                                         </div>
                                         <div class="col-9">
                                             <input asp-for="@Model.ApplicationUser.PostalCode" type="text" class="form-control" />
-                                            <span asp-validation-for="@Model.ApplicationUser.PostalCode" class="text-danger"></span>
                                         </div>
                                     </div>
                                 }
@@ -155,11 +148,11 @@
                         <div class="col-12 col-md-5 offset-md-7">
                             @if (User.IsInRole(Rocky_Utility.WebConstants.AdminRole))
                             {
-                                <button type="submit" class="btn btn-success form-control" id="submit-button">Submit Order</button>
+                                <button type="submit" class="btn btn-success form-control" onclick="return validateInput()" id="submit-button">Submit Order</button>
                             }
                             else
                             {
-                                <button type="submit" class="btn btn-primary form-control">Submit Inquiry</button>
+                                <button type="submit" class="btn btn-primary form-control" onclick="return validateInput()">Submit Inquiry</button>
                             }
 
                         </div>
@@ -198,5 +191,40 @@
                 });
             });
         });
+
+
+        function validateInput() {
+            var app_name = document.getElementById("ApplicationUser_FullName").value;
+            var phone = document.getElementById("ApplicationUser_PhoneNumber").value;
+            var email = document.getElementById("ApplicationUser_Email").value;
+
+            if (app_name.toString() == '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter Full Name!'
+                })
+                return false;
+            }
+            if (phone.toString() == '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter phone number!'
+                })
+                return false;
+
+            }
+            if (email.toString() == '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Please enter email!'
+                })
+                return false;
+            }
+            return true;
+
+        }
     </script>
 }

@@ -123,13 +123,14 @@ namespace Rocky.Areas.Identity.Pages.Account
                     {
                         if (!User.IsInRole(WebConstants.AdminRole))
                         {
+                            return LocalRedirect(returnUrl);
                             await _signInManager.SignInAsync(user, isPersistent: false);
                         }
                         else
                         {
-                            return RedirectToAction("Index");
+                            TempData[WebConstants.Success] = $"{user.FullName} has been registered";
+                            return RedirectToAction("Index","Home");
                         }
-                        return LocalRedirect(returnUrl);
                     }
                 }
                 foreach (var error in result.Errors)
