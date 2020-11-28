@@ -73,11 +73,6 @@ namespace Rocky.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            if(!await _roleManager.RoleExistsAsync(WebConstants.AdminRole))
-            {
-                await _roleManager.CreateAsync(new IdentityRole(WebConstants.AdminRole));
-                await _roleManager.CreateAsync(new IdentityRole(WebConstants.CustomerRole));
-            }
 
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
